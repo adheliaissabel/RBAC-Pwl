@@ -1,24 +1,29 @@
-import express from "express";
-import "dotenv/config";
-import path from "path";
-
-import userRoutes from "./routers/userRoutes";
+import express from 'express';
+import 'dotenv/config';
+import './config/database';
+import userRoutes from './routers/userRoutes';
+import roleRoutes from './routers/roleRoutes';
+import permissionRoutes from './routers/permissionRoutes';
+import path from 'path';
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static('public'));
 
-// 🔐 fake login (WAJIB 1x saja)
-app.use((req: any, res, next) => {
-  req.user = { id: 1, role_id: 1 };
-  next();
+app.use('/users', userRoutes);
+app.use('/roles', roleRoutes);
+app.use('/permissions', permissionRoutes);
+
+app.get('/', (req, res) => {
+  res.redirect('/users');
 });
 
-app.use("/users", userRoutes);
-
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
